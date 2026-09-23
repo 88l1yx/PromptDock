@@ -28,7 +28,8 @@ export default function App(): React.JSX.Element {
     docked: false,
     hidden: false,
     pinned: false,
-    phase: 'free'
+    phase: 'free',
+    edge: null
   })
 
   const activeTab = useMemo(
@@ -101,7 +102,7 @@ export default function App(): React.JSX.Element {
     <main
       className={`app-shell ${
         dockState.phase === 'collapsing' || dockState.phase === 'hidden' ? 'is-docked-hidden' : ''
-      }`}
+      } ${dockState.edge === 'left' ? 'is-docked-left' : ''}`}
     >
       <TitleBar
         title={activeTab.title}

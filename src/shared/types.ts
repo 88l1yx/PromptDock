@@ -23,6 +23,7 @@ export interface DockSnapshot {
   hidden: boolean
   pinned: boolean
   phase: 'free' | 'docked' | 'collapsing' | 'hidden' | 'expanding'
+  edge: 'left' | 'right' | null
 }
 
 export interface PromptDockApi {

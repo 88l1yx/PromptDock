@@ -115,6 +115,15 @@ select:focus-visible {
   box-shadow: none;
 }
 
+.app-shell.is-docked-left::before {
+  right: 0;
+  left: auto;
+}
+
+.app-shell.is-docked-hidden.is-docked-left {
+  transform: translateX(calc(-100% + 6px));
+}
+
 .titlebar {
   position: relative;
   z-index: 2;

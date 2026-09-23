@@ -28,6 +28,7 @@ export class DockController {
   private animating = false
   private dragging = false
   private phase: DockSnapshot['phase'] = 'free'
+  private dockedEdge: DockSnapshot['edge'] = null
   private lastInsideAt = Date.now()
   private lastActivityAt = 0
   private snapSuppressedUntil = 0
@@ -111,7 +112,10 @@ export class DockController {
     }
 
     const bounds = this.window.getBounds()
-    const targetX = display.bounds.x + display.bounds.width - bounds.width
+    const targetX =
+      this.dockedEdge === 'left'
+        ? display.bounds.x
+        : display.bounds.x + display.bounds.width - bounds.width
 
     if (Math.abs(bounds.x - targetX) > 1) {
       this.setBoundsProgrammatically({ ...bounds, x: targetX })
@@ -128,8 +132,10 @@ export class DockController {
       x: bounds.x + bounds.width,
       y: Math.round(bounds.y + bounds.height / 2)
     })
+    const leftEdge = display.bounds.x
     const rightEdge = display.bounds.x + display.bounds.width
-    const gap = rightEdge - (bounds.x + bounds.width)
+    const leftGap = bounds.x - leftEdge
+    const rightGap = rightEdge - (bounds.x + bounds.width)
     const dockZone = Math.max(
       DOCK_ZONE_MIN,
       Math.min(DOCK_ZONE_MAX, display.workArea.width * DOCK_ZONE_RATIO)
@@ -139,26 +145,51 @@ export class DockController {
       bounds.y < display.workArea.y + display.workArea.height - 24
 
     if (this.docked) {
-      if (!hasVerticalOverlap || gap > DETACH_THRESHOLD) {
+      const currentGap = this.dockedEdge === 'left' ? leftGap : rightGap
+      const oppositeEdge: 'left' | 'right' = this.dockedEdge === 'left' ? 'right' : 'left'
+      const oppositeGap = oppositeEdge === 'left' ? leftGap : rightGap
+      const canDockOpposite =
+        oppositeEdge === 'left'
+          ? bounds.x + bounds.width >= leftEdge + 72 && oppositeGap <= dockZone
+          : bounds.x <= rightEdge - 72 && oppositeGap <= dockZone
+
+      if (!hasVerticalOverlap || currentGap > DETACH_THRESHOLD) {
         this.undock(true)
-      } else if (Math.abs(gap) > 1) {
-        this.setBoundsProgrammatically({ ...bounds, x: rightEdge - bounds.width })
+
+        if (canDockOpposite) {
+          this.dock(display, oppositeEdge)
+        }
+      } else if (Math.abs(currentGap) > 1) {
+        const x = this.dockedEdge === 'left' ? leftEdge : rightEdge - bounds.width
+        this.setBoundsProgrammatically({ ...bounds, x })
       }
       return
     }
 
-    if (
-      hasVerticalOverlap &&
-      bounds.x <= rightEdge - 72 &&
-      gap <= dockZone &&
-      Date.now() >= this.snapSuppressedUntil
-    ) {
-      this.dock(display)
+    if (!hasVerticalOverlap || Date.now() < this.snapSuppressedUntil) {
+      return
+    }
+
+    const canDockLeft = bounds.x + bounds.width >= leftEdge + 72 && leftGap <= dockZone
+    const canDockRight = bounds.x <= rightEdge - 72 && rightGap <= dockZone
+
+    if (canDockLeft || canDockRight) {
+      const edge =
+        canDockLeft && canDockRight
+          ? Math.abs(leftGap) <= Math.abs(rightGap)
+            ? 'left'
+            : 'right'
+          : canDockLeft
+            ? 'left'
+            : 'right'
+
+      this.dock(display, edge)
     }
   }
 
-  private dock(display: Display): void {
+  private dock(display: Display, edge: 'left' | 'right'): void {
     this.dockedDisplayId = display.id
+    this.dockedEdge = edge
     this.docked = true
     this.hidden = false
     this.phase = 'docked'
@@ -168,7 +199,7 @@ export class DockController {
     const bounds = this.window.getBounds()
     const maxY = Math.max(display.workArea.y, display.workArea.y + display.workArea.height - bounds.height)
     const y = Math.min(Math.max(bounds.y, display.workArea.y), maxY)
-    const x = display.bounds.x + display.bounds.width - bounds.width
+    const x = edge === 'left' ? display.bounds.x : display.bounds.x + display.bounds.width - bounds.width
 
     if (Math.abs(bounds.x - x) > 1 || Math.abs(bounds.y - y) > 1) {
       this.setBoundsProgrammatically({ ...bounds, x, y })
@@ -181,6 +212,7 @@ export class DockController {
     this.docked = false
     this.hidden = false
     this.phase = 'free'
+    this.dockedEdge = null
     this.dockedDisplayId = null
     this.window.setIgnoreMouseEvents(false)
 
@@ -208,14 +240,33 @@ export class DockController {
     }
 
     const cursor = screen.getCursorScreenPoint()
+    const displayLeft = display.bounds.x
     const displayRight = display.bounds.x + display.bounds.width
+    const bounds = this.window.getBounds()
+
+    if (!this.hidden) {
+      const currentGap =
+        this.dockedEdge === 'left'
+          ? bounds.x - displayLeft
+          : displayRight - (bounds.x + bounds.width)
+
+      if (currentGap > DETACH_THRESHOLD + 4) {
+        this.evaluateWindowPosition()
+        return
+      }
+    }
 
     if (this.hidden) {
+      const withinVerticalBounds =
+        cursor.y >= display.bounds.y && cursor.y <= display.bounds.y + display.bounds.height
       const nearEdge =
-        cursor.x >= displayRight - EDGE_TRIGGER_PX &&
-        cursor.x <= displayRight + 2 &&
-        cursor.y >= display.bounds.y &&
-        cursor.y <= display.bounds.y + display.bounds.height
+        this.dockedEdge === 'left'
+          ? cursor.x <= displayLeft + EDGE_TRIGGER_PX &&
+            cursor.x >= displayLeft - 2 &&
+            withinVerticalBounds
+          : cursor.x >= displayRight - EDGE_TRIGGER_PX &&
+            cursor.x <= displayRight + 2 &&
+            withinVerticalBounds
 
       if (nearEdge) {
         this.lastInsideAt = Date.now()
@@ -224,7 +275,6 @@ export class DockController {
       return
     }
 
-    const bounds = this.window.getBounds()
     const cursorInside =
       cursor.x >= bounds.x - 8 &&
       cursor.x <= bounds.x + bounds.width + 8 &&
@@ -312,7 +362,8 @@ export class DockController {
       docked: this.docked,
       hidden: this.hidden,
       pinned: this.pinned,
-      phase: this.phase
+      phase: this.phase,
+      edge: this.dockedEdge
     }
     const serialized = JSON.stringify(snapshot)
 
