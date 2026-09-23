@@ -44,8 +44,8 @@ PromptDock 解决的是“临时写一大段提示词时，不想专门打开 VS
 
 请前往 [GitHub Releases](https://github.com/88l1yx/PromptDock/releases/latest)：
 
-- `PromptDock-Portable-0.1.3-x64.exe`：无需安装，双击即可运行。
-- `PromptDock-Setup-0.1.3-x64.exe`：安装版，支持创建桌面快捷方式。
+- [PromptDock-Portable-0.1.3-x64.exe](https://github.com/88l1yx/PromptDock/releases/latest/download/PromptDock-Portable-0.1.3-x64.exe)：无需安装，双击即可运行。
+- [PromptDock-Setup-0.1.3-x64.exe](https://github.com/88l1yx/PromptDock/releases/latest/download/PromptDock-Setup-0.1.3-x64.exe)：安装版，支持创建桌面快捷方式。
 
 当前安装包未配置商业代码签名证书，Windows 首次运行时可能出现 SmartScreen 提示。
 
@@ -113,8 +113,8 @@ PromptDock is built for the moment when you need to write a long prompt or AI in
 
 Open [GitHub Releases](https://github.com/88l1yx/PromptDock/releases/latest):
 
-- `PromptDock-Portable-0.1.3-x64.exe`: portable, run without installation.
-- `PromptDock-Setup-0.1.3-x64.exe`: installer with desktop shortcut support.
+- [PromptDock-Portable-0.1.3-x64.exe](https://github.com/88l1yx/PromptDock/releases/latest/download/PromptDock-Portable-0.1.3-x64.exe): portable, run without installation.
+- [PromptDock-Setup-0.1.3-x64.exe](https://github.com/88l1yx/PromptDock/releases/latest/download/PromptDock-Setup-0.1.3-x64.exe): installer with desktop shortcut support.
 
 The binaries are not commercially code-signed, so Windows may display a SmartScreen warning on first launch.
 
