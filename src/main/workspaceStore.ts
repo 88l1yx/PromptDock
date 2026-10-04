@@ -35,7 +35,11 @@ function createDefaultState(): WorkspaceState {
     activeTabId: tab.id,
     theme: 'dark',
     syntaxMode: 'prompt',
-    pinExpanded: false
+    pinExpanded: false,
+    windowSize: {
+      width: 540,
+      height: 760
+    }
   }
 }
 
@@ -102,7 +106,17 @@ function normalizeState(value: unknown): WorkspaceState {
       candidate.syntaxMode === 'javascript'
         ? candidate.syntaxMode
         : 'prompt',
-    pinExpanded: Boolean(candidate.pinExpanded)
+    pinExpanded: Boolean(candidate.pinExpanded),
+    windowSize: {
+      width:
+        typeof candidate.windowSize?.width === 'number' && Number.isFinite(candidate.windowSize.width)
+          ? Math.max(360, Math.round(candidate.windowSize.width))
+          : 540,
+      height:
+        typeof candidate.windowSize?.height === 'number' && Number.isFinite(candidate.windowSize.height)
+          ? Math.max(420, Math.round(candidate.windowSize.height))
+          : 760
+    }
   }
 }
 

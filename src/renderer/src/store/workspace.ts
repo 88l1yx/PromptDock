@@ -5,6 +5,7 @@ import type {
   SavedDocument,
   SyntaxMode,
   ThemeMode,
+  WindowSize,
   WorkspaceState
 } from '@shared/types'
 
@@ -18,6 +19,7 @@ interface WorkspaceStore extends WorkspaceState {
   setTheme: (theme: ThemeMode) => void
   setSyntaxMode: (mode: SyntaxMode) => void
   setPinExpanded: (pinned: boolean) => void
+  setWindowSize: (size: WindowSize) => void
   addFolder: () => string
   renameFolder: (id: string, name: string) => void
   deleteFolder: (id: string) => void
@@ -67,6 +69,10 @@ export const useWorkspaceStore = create<WorkspaceStore>((set) => ({
   theme: 'dark',
   syntaxMode: 'prompt',
   pinExpanded: false,
+  windowSize: {
+    width: 540,
+    height: 760
+  },
   hydrated: false,
   hydrate: (state) =>
     set({
@@ -119,6 +125,7 @@ export const useWorkspaceStore = create<WorkspaceStore>((set) => ({
   setTheme: (theme) => set({ theme }),
   setSyntaxMode: (syntaxMode) => set({ syntaxMode }),
   setPinExpanded: (pinExpanded) => set({ pinExpanded }),
+  setWindowSize: (windowSize) => set({ windowSize }),
   addFolder: () => {
     const id = crypto.randomUUID()
 

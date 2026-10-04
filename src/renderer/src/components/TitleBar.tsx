@@ -1,11 +1,13 @@
-import { Moon, Pin, PinOff, Sun, X } from 'lucide-react'
+import { Check, LoaderCircle, Moon, Pin, PinOff, Save, Sun, X } from 'lucide-react'
 import type { ThemeMode } from '@shared/types'
 
 interface TitleBarProps {
   title: string
   theme: ThemeMode
   pinned: boolean
+  windowSizeSaveStatus: 'idle' | 'saving' | 'saved' | 'error'
   onClose: () => void
+  onSaveWindowSize: () => void
   onTogglePin: () => void
   onToggleTheme: () => void
 }
@@ -14,7 +16,9 @@ export function TitleBar({
   title,
   theme,
   pinned,
+  windowSizeSaveStatus,
   onClose,
+  onSaveWindowSize,
   onTogglePin,
   onToggleTheme
 }: TitleBarProps): React.JSX.Element {
@@ -40,6 +44,27 @@ export function TitleBar({
       </div>
 
       <div className="titlebar-controls">
+        <button
+          className={`icon-button save-window-button is-${windowSizeSaveStatus}`}
+          type="button"
+          title={
+            windowSizeSaveStatus === 'saved'
+              ? '窗口尺寸已保存'
+              : windowSizeSaveStatus === 'error'
+                ? '尺寸保存失败'
+                : '保存当前窗口尺寸'
+          }
+          disabled={windowSizeSaveStatus === 'saving'}
+          onClick={onSaveWindowSize}
+        >
+          {windowSizeSaveStatus === 'saving' ? (
+            <LoaderCircle className="save-window-spinner" size={14} />
+          ) : windowSizeSaveStatus === 'saved' ? (
+            <Check size={14} strokeWidth={2.4} />
+          ) : (
+            <Save size={14} strokeWidth={1.9} />
+          )}
+        </button>
         <button
           className="icon-button"
           type="button"

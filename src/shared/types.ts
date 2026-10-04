@@ -25,6 +25,11 @@ export interface DocumentFolder {
   documents: SavedDocument[]
 }
 
+export interface WindowSize {
+  width: number
+  height: number
+}
+
 export interface WorkspaceState {
   version: 1
   tabs: NoteTab[]
@@ -33,6 +38,7 @@ export interface WorkspaceState {
   theme: ThemeMode
   syntaxMode: SyntaxMode
   pinExpanded: boolean
+  windowSize: WindowSize
 }
 
 export interface DockSnapshot {
@@ -47,6 +53,7 @@ export interface PromptDockApi {
   loadWorkspace: () => Promise<WorkspaceState>
   saveWorkspace: (state: WorkspaceState) => Promise<void>
   closeWindow: () => Promise<void>
+  getWindowSize: () => Promise<WindowSize>
   setPinned: (pinned: boolean) => void
   reportActivity: () => void
   onDockState: (listener: (snapshot: DockSnapshot) => void) => () => void

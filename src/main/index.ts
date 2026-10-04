@@ -14,8 +14,8 @@ function createWindow(initialState: WorkspaceState): BrowserWindow {
     : join(__dirname, '../../build/icon.png')
 
   const window = new BrowserWindow({
-    width: 540,
-    height: 760,
+    width: initialState.windowSize.width,
+    height: initialState.windowSize.height,
     minWidth: 360,
     minHeight: 420,
     show: false,
@@ -73,6 +73,15 @@ function registerIpcHandlers(): void {
 
   ipcMain.handle('window:close', () => {
     mainWindow?.close()
+  })
+
+  ipcMain.handle('window:get-size', () => {
+    const bounds = mainWindow?.getBounds()
+
+    return {
+      width: bounds?.width ?? 540,
+      height: bounds?.height ?? 760
+    }
   })
 
   ipcMain.on('dock:set-pinned', (_event, pinned: boolean) => {

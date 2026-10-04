@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { DockSnapshot, WorkspaceState } from '@shared/types'
 import { EditorPane } from './editor/EditorPane'
 import { FolderView } from './components/FolderView'
@@ -8,6 +8,22 @@ import { TitleBar } from './components/TitleBar'
 import { useWorkspaceStore } from './store/workspace'
 
 type SaveStatus = 'saved' | 'saving' | 'error'
+type WindowSizeSaveStatus = 'idle' | 'saving' | 'saved' | 'error'
+
+function getWorkspaceSnapshot(): WorkspaceState {
+  const state = useWorkspaceStore.getState()
+
+  return {
+    version: 1,
+    tabs: state.tabs,
+    folders: state.folders,
+    activeTabId: state.activeTabId,
+    theme: state.theme,
+    syntaxMode: state.syntaxMode,
+    pinExpanded: state.pinExpanded,
+    windowSize: state.windowSize
+  }
+}
 
 export default function App(): React.JSX.Element {
   const tabs = useWorkspaceStore((state) => state.tabs)
@@ -16,6 +32,7 @@ export default function App(): React.JSX.Element {
   const theme = useWorkspaceStore((state) => state.theme)
   const syntaxMode = useWorkspaceStore((state) => state.syntaxMode)
   const pinExpanded = useWorkspaceStore((state) => state.pinExpanded)
+  const windowSize = useWorkspaceStore((state) => state.windowSize)
   const hydrated = useWorkspaceStore((state) => state.hydrated)
   const hydrate = useWorkspaceStore((state) => state.hydrate)
   const addTab = useWorkspaceStore((state) => state.addTab)
@@ -25,6 +42,7 @@ export default function App(): React.JSX.Element {
   const setTheme = useWorkspaceStore((state) => state.setTheme)
   const setSyntaxMode = useWorkspaceStore((state) => state.setSyntaxMode)
   const setPinExpanded = useWorkspaceStore((state) => state.setPinExpanded)
+  const setWindowSize = useWorkspaceStore((state) => state.setWindowSize)
   const addFolder = useWorkspaceStore((state) => state.addFolder)
   const renameFolder = useWorkspaceStore((state) => state.renameFolder)
   const deleteFolder = useWorkspaceStore((state) => state.deleteFolder)
@@ -32,6 +50,8 @@ export default function App(): React.JSX.Element {
   const deleteSavedDocument = useWorkspaceStore((state) => state.deleteSavedDocument)
   const openSavedDocument = useWorkspaceStore((state) => state.openSavedDocument)
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('saved')
+  const [windowSizeSaveStatus, setWindowSizeSaveStatus] = useState<WindowSizeSaveStatus>('idle')
+  const windowSizeSaveTimer = useRef<number | null>(null)
   const [openFolderId, setOpenFolderId] = useState<string | null>(null)
   const [dockState, setDockState] = useState<DockSnapshot>({
     docked: false,
@@ -80,16 +100,7 @@ export default function App(): React.JSX.Element {
 
     setSaveStatus('saving')
     const timer = setTimeout(async () => {
-      const state = useWorkspaceStore.getState()
-      const snapshot: WorkspaceState = {
-        version: 1,
-        tabs: state.tabs,
-        folders: state.folders,
-        activeTabId: state.activeTabId,
-        theme: state.theme,
-        syntaxMode: state.syntaxMode,
-        pinExpanded: state.pinExpanded
-      }
+      const snapshot = getWorkspaceSnapshot()
 
       try {
         await window.promptDock.saveWorkspace(snapshot)
@@ -100,7 +111,7 @@ export default function App(): React.JSX.Element {
     }, 350)
 
     return () => clearTimeout(timer)
-  }, [activeTabId, folders, hydrated, pinExpanded, syntaxMode, tabs, theme])
+  }, [activeTabId, folders, hydrated, pinExpanded, syntaxMode, tabs, theme, windowSize])
 
   useEffect(() => {
     if (openFolderId && !folders.some((folder) => folder.id === openFolderId)) {
@@ -118,6 +129,34 @@ export default function App(): React.JSX.Element {
     window.promptDock.setPinned(next)
   }
 
+  const handleSaveWindowSize = async (): Promise<void> => {
+    if (windowSizeSaveStatus === 'saving') {
+      return
+    }
+
+    if (windowSizeSaveTimer.current !== null) {
+      window.clearTimeout(windowSizeSaveTimer.current)
+    }
+
+    setWindowSizeSaveStatus('saving')
+
+    try {
+      const size = await window.promptDock.getWindowSize()
+      setWindowSize(size)
+
+      const snapshot = getWorkspaceSnapshot()
+      await window.promptDock.saveWorkspace(snapshot)
+      setWindowSizeSaveStatus('saved')
+
+      windowSizeSaveTimer.current = window.setTimeout(() => {
+        windowSizeSaveTimer.current = null
+        setWindowSizeSaveStatus('idle')
+      }, 900)
+    } catch {
+      setWindowSizeSaveStatus('error')
+    }
+  }
+
   return (
     <main
       className={`app-shell ${
@@ -128,7 +167,9 @@ export default function App(): React.JSX.Element {
         title={activeTab.title}
         theme={theme}
         pinned={pinExpanded}
+        windowSizeSaveStatus={windowSizeSaveStatus}
         onClose={() => void window.promptDock.closeWindow()}
+        onSaveWindowSize={() => void handleSaveWindowSize()}
         onTogglePin={handleTogglePin}
         onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
       />

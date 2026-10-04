@@ -42,6 +42,8 @@ PromptDock 解决的是“临时写一大段提示词时，不想专门打开 VS
 - 支持 Prompt、Markdown、纯文本、JSON 和 JavaScript 语法模式。
 - 深色和浅色主题。
 - 编辑内容自动保存到 Electron 用户数据目录。
+- 右上角主题按钮旁提供窗口尺寸保存按钮；调整到合适大小后点击保存，下次启动会恢复该尺寸。
+- 尺寸保存按钮包含保存中旋转、保存完成勾选回弹和失败抖动动画。
 - `Ctrl+Alt+Space` 全局快捷键用于快速显示或隐藏窗口。
 - 自定义应用图标和单实例运行。
 
@@ -49,8 +51,8 @@ PromptDock 解决的是“临时写一大段提示词时，不想专门打开 VS
 
 请前往 [GitHub Releases](https://github.com/88l1yx/PromptDock/releases/latest)：
 
-- [PromptDock-Portable-0.3.0-x64.exe](https://github.com/88l1yx/PromptDock/releases/latest/download/PromptDock-Portable-0.3.0-x64.exe)：无需安装，双击即可运行。
-- [PromptDock-Setup-0.3.0-x64.exe](https://github.com/88l1yx/PromptDock/releases/latest/download/PromptDock-Setup-0.3.0-x64.exe)：安装版，支持创建桌面快捷方式。
+- [PromptDock-Portable-0.4.0-x64.exe](https://github.com/88l1yx/PromptDock/releases/latest/download/PromptDock-Portable-0.4.0-x64.exe)：无需安装，双击即可运行。
+- [PromptDock-Setup-0.4.0-x64.exe](https://github.com/88l1yx/PromptDock/releases/latest/download/PromptDock-Setup-0.4.0-x64.exe)：安装版，支持创建桌面快捷方式。
 
 当前安装包未配置商业代码签名证书，Windows 首次运行时可能出现 SmartScreen 提示。
 
@@ -114,6 +116,8 @@ PromptDock is built for the moment when you need to write a long prompt or AI in
 - Prompt, Markdown, plain text, JSON, and JavaScript modes.
 - Dark and light themes.
 - Automatic local persistence through Electron user data.
+- A save-size button next to the theme button stores the current width and height and restores it on the next launch.
+- The save-size button has spinning, success-pop, and error-shake animation states.
 - `Ctrl+Alt+Space` global shortcut for showing or hiding the window.
 - Custom application icon and single-instance behavior.
 
@@ -121,8 +125,8 @@ PromptDock is built for the moment when you need to write a long prompt or AI in
 
 Open [GitHub Releases](https://github.com/88l1yx/PromptDock/releases/latest):
 
-- [PromptDock-Portable-0.3.0-x64.exe](https://github.com/88l1yx/PromptDock/releases/latest/download/PromptDock-Portable-0.3.0-x64.exe): portable, run without installation.
-- [PromptDock-Setup-0.3.0-x64.exe](https://github.com/88l1yx/PromptDock/releases/latest/download/PromptDock-Setup-0.3.0-x64.exe): installer with desktop shortcut support.
+- [PromptDock-Portable-0.4.0-x64.exe](https://github.com/88l1yx/PromptDock/releases/latest/download/PromptDock-Portable-0.4.0-x64.exe): portable, run without installation.
+- [PromptDock-Setup-0.4.0-x64.exe](https://github.com/88l1yx/PromptDock/releases/latest/download/PromptDock-Setup-0.4.0-x64.exe): installer with desktop shortcut support.
 
 The binaries are not commercially code-signed, so Windows may display a SmartScreen warning on first launch.
 

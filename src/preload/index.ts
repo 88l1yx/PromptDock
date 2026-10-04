@@ -5,6 +5,7 @@ const api: PromptDockApi = {
   loadWorkspace: () => ipcRenderer.invoke('workspace:load') as Promise<WorkspaceState>,
   saveWorkspace: (state) => ipcRenderer.invoke('workspace:save', state) as Promise<void>,
   closeWindow: () => ipcRenderer.invoke('window:close') as Promise<void>,
+  getWindowSize: () => ipcRenderer.invoke('window:get-size') as Promise<{ width: number; height: number }>,
   setPinned: (pinned) => ipcRenderer.send('dock:set-pinned', pinned),
   reportActivity: () => ipcRenderer.send('dock:activity'),
   onDockState: (listener) => {

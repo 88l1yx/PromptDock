@@ -1,6 +1,6 @@
 {
   "name": "prompt-dock",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "An always-on-top prompt notepad with edge docking for Windows.",
   "repository": {
     "type": "git",
