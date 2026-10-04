@@ -33,6 +33,7 @@ export class DockController {
   private lastActivityAt = 0
   private snapSuppressedUntil = 0
   private programmaticMoveUntil = 0
+  private lastEdgeToggleAt = 0
   private lastSnapshot = ''
 
   constructor(window: BrowserWindow, onState: (snapshot: DockSnapshot) => void) {
@@ -258,7 +259,7 @@ export class DockController {
 
     if (this.hidden) {
       const withinVerticalBounds =
-        cursor.y >= display.bounds.y && cursor.y <= display.bounds.y + display.bounds.height
+        cursor.y >= bounds.y - 8 && cursor.y <= bounds.y + bounds.height + 8
       const nearEdge =
         this.dockedEdge === 'left'
           ? cursor.x <= displayLeft + EDGE_TRIGGER_PX &&
@@ -268,8 +269,9 @@ export class DockController {
             cursor.x <= displayRight + 2 &&
             withinVerticalBounds
 
-      if (nearEdge) {
+      if (nearEdge && Date.now() - this.lastEdgeToggleAt > 260) {
         this.lastInsideAt = Date.now()
+        this.lastEdgeToggleAt = Date.now()
         this.showFromEdge()
       }
       return
@@ -305,6 +307,7 @@ export class DockController {
 
     this.hidden = false
     this.animating = true
+    this.lastEdgeToggleAt = Date.now()
     this.phase = 'expanding'
     this.lastInsideAt = Date.now()
     this.window.setIgnoreMouseEvents(false)

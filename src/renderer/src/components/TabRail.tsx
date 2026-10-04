@@ -1,15 +1,35 @@
+import { useState } from 'react'
 import { Plus, X } from 'lucide-react'
-import type { NoteTab } from '@shared/types'
+import type { DocumentFolder, NoteTab } from '@shared/types'
+import { FolderShelf } from './FolderShelf'
 
 interface TabRailProps {
   tabs: NoteTab[]
+  folders: DocumentFolder[]
   activeTabId: string
+  activeFolderId: string | null
   onAdd: () => void
   onSelect: (id: string) => void
   onClose: (id: string) => void
+  onOpenFolder: (id: string) => void
+  onCreateFolder: () => void
+  onSaveTabToFolder: (tabId: string, folderId: string) => void
 }
 
-export function TabRail({ tabs, activeTabId, onAdd, onSelect, onClose }: TabRailProps): React.JSX.Element {
+export function TabRail({
+  tabs,
+  folders,
+  activeTabId,
+  activeFolderId,
+  onAdd,
+  onSelect,
+  onClose,
+  onOpenFolder,
+  onCreateFolder,
+  onSaveTabToFolder
+}: TabRailProps): React.JSX.Element {
+  const [draggingTabId, setDraggingTabId] = useState<string | null>(null)
+
   return (
     <nav className="tab-rail" aria-label="文本页面">
       <button className="add-tab-button" type="button" title="新建文本页面" onClick={onAdd}>
@@ -21,7 +41,21 @@ export function TabRail({ tabs, activeTabId, onAdd, onSelect, onClose }: TabRail
           const active = tab.id === activeTabId
 
           return (
-            <div className={`tab-slot ${active ? 'is-active' : ''}`} key={tab.id}>
+            <div
+              className={`tab-slot ${active ? 'is-active' : ''} ${
+                draggingTabId === tab.id ? 'is-dragging' : ''
+              }`}
+              key={tab.id}
+              data-tab-id={tab.id}
+              draggable
+              onDragStart={(event) => {
+                event.dataTransfer.effectAllowed = 'copy'
+                event.dataTransfer.setData('application/x-promptdock-tab', tab.id)
+                event.dataTransfer.setData('text/plain', tab.id)
+                setDraggingTabId(tab.id)
+              }}
+              onDragEnd={() => setDraggingTabId(null)}
+            >
               <button
                 className="tab-button"
                 type="button"
@@ -46,6 +80,14 @@ export function TabRail({ tabs, activeTabId, onAdd, onSelect, onClose }: TabRail
           )
         })}
       </div>
+
+      <FolderShelf
+        folders={folders}
+        activeFolderId={activeFolderId}
+        onOpenFolder={onOpenFolder}
+        onCreateFolder={onCreateFolder}
+        onSaveTabToFolder={onSaveTabToFolder}
+      />
     </nav>
   )
 }

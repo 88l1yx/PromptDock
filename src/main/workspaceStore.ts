@@ -2,7 +2,7 @@ import { app } from 'electron'
 import { promises as fs } from 'node:fs'
 import { randomUUID } from 'node:crypto'
 import { dirname, join } from 'node:path'
-import type { NoteTab, WorkspaceState } from '../shared/types'
+import type { DocumentFolder, NoteTab, SavedDocument, WorkspaceState } from '../shared/types'
 
 const DEFAULT_PROMPT = `[system]
 你是一名严谨、耐心的专业助手。
@@ -31,6 +31,7 @@ function createDefaultState(): WorkspaceState {
   return {
     version: 1,
     tabs: [tab],
+    folders: [],
     activeTabId: tab.id,
     theme: 'dark',
     syntaxMode: 'prompt',
@@ -51,7 +52,9 @@ function normalizeState(value: unknown): WorkspaceState {
       id: typeof tab.id === 'string' && tab.id ? tab.id : randomUUID(),
       title: typeof tab.title === 'string' && tab.title ? tab.title : `Prompt ${String(index + 1).padStart(2, '0')}`,
       content: typeof tab.content === 'string' ? tab.content : '',
-      updatedAt: typeof tab.updatedAt === 'string' ? tab.updatedAt : new Date().toISOString()
+      updatedAt: typeof tab.updatedAt === 'string' ? tab.updatedAt : new Date().toISOString(),
+      sourceDocumentId: typeof tab.sourceDocumentId === 'string' ? tab.sourceDocumentId : undefined,
+      sourceFolderId: typeof tab.sourceFolderId === 'string' ? tab.sourceFolderId : undefined
     }))
 
   if (!tabs.length) {
@@ -61,10 +64,35 @@ function normalizeState(value: unknown): WorkspaceState {
   const activeTabId = tabs.some((tab) => tab.id === candidate.activeTabId)
     ? (candidate.activeTabId as string)
     : tabs[0].id
+  const sourceFolders = Array.isArray(candidate.folders) ? candidate.folders : []
+  const folders: DocumentFolder[] = sourceFolders
+    .filter((folder): folder is DocumentFolder => Boolean(folder && typeof folder === 'object'))
+    .map((folder, folderIndex) => {
+      const sourceDocuments = Array.isArray(folder.documents) ? folder.documents : []
+      const documents: SavedDocument[] = sourceDocuments
+        .filter((document): document is SavedDocument => Boolean(document && typeof document === 'object'))
+        .map((document, documentIndex) => ({
+          id: typeof document.id === 'string' && document.id ? document.id : randomUUID(),
+          title:
+            typeof document.title === 'string' && document.title
+              ? document.title
+              : `文档 ${String(documentIndex + 1).padStart(2, '0')}`,
+          content: typeof document.content === 'string' ? document.content : '',
+          savedAt: typeof document.savedAt === 'string' ? document.savedAt : new Date().toISOString(),
+          sourceTabId: typeof document.sourceTabId === 'string' ? document.sourceTabId : undefined
+        }))
+
+      return {
+        id: typeof folder.id === 'string' && folder.id ? folder.id : randomUUID(),
+        name: typeof folder.name === 'string' && folder.name ? folder.name : `文件夹 ${folderIndex + 1}`,
+        documents
+      }
+    })
 
   return {
     version: 1,
     tabs,
+    folders,
     activeTabId,
     theme: candidate.theme === 'light' ? 'light' : 'dark',
     syntaxMode:

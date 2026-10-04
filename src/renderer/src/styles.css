@@ -206,7 +206,7 @@ select:focus-visible {
 .tab-rail {
   position: relative;
   display: grid;
-  grid-template-rows: 42px minmax(0, 1fr);
+  grid-template-rows: 42px minmax(0, 1fr) auto;
   min-height: 0;
   background: var(--rail);
   border-right: 1px solid var(--line);
@@ -223,6 +223,10 @@ select:focus-visible {
   position: relative;
   height: 48px;
   border-bottom: 1px solid var(--line-soft);
+}
+
+.tab-slot.is-dragging {
+  opacity: 0.42;
 }
 
 .tab-slot::before,
@@ -336,7 +340,84 @@ select:focus-visible {
   color: var(--syntax-green);
 }
 
+.folder-shelf {
+  min-height: 0;
+  padding: 6px 0;
+  background: var(--rail);
+  border-top: 1px solid var(--line);
+}
+
+.folder-list {
+  display: flex;
+  max-height: 112px;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.folder-list::-webkit-scrollbar {
+  display: none;
+}
+
+.folder-button,
+.folder-create-button {
+  position: relative;
+  display: grid;
+  width: 42px;
+  height: 40px;
+  flex: 0 0 auto;
+  padding: 0;
+  place-items: center;
+  background: transparent;
+  border-radius: 8px;
+  color: var(--muted);
+  transform: scale(1);
+  transition:
+    transform 140ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 140ms ease,
+    background-color 140ms ease;
+}
+
+.folder-button:hover,
+.folder-create-button:hover,
+.folder-button.is-active {
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.folder-button.is-drag-over {
+  z-index: 3;
+  background: var(--accent-soft);
+  color: var(--accent);
+  transform: scale(1.24);
+}
+
+.folder-count {
+  position: absolute;
+  right: 2px;
+  bottom: 1px;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 3px;
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  line-height: 13px;
+  text-align: center;
+}
+
+.folder-create-button {
+  height: 34px;
+}
+
 .editor-host {
+  position: relative;
   min-width: 0;
   min-height: 0;
   background: var(--canvas);
@@ -360,7 +441,153 @@ select:focus-visible {
   color: var(--syntax-amber);
 }
 
+.folder-view {
+  display: grid;
+  grid-template-rows: 46px minmax(0, 1fr);
+  width: 100%;
+  height: 100%;
+  background: var(--canvas);
+}
+
+.folder-view-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px 0 12px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+
+.folder-view-title {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  color: var(--accent);
+}
+
+.folder-view-title input {
+  min-width: 0;
+  flex: 1;
+  padding: 3px 4px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  color: var(--ink);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.folder-view-title input:hover,
+.folder-view-title input:focus {
+  background: var(--surface-raised);
+  border-color: var(--line);
+  outline: none;
+}
+
+.folder-view-title > span {
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+}
+
+.folder-view-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.folder-view-actions .icon-button.is-danger {
+  background: color-mix(in srgb, var(--danger) 14%, transparent);
+  color: var(--danger);
+}
+
+.document-list {
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.document-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 32px;
+  min-height: 48px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.document-row:hover {
+  background: color-mix(in srgb, var(--surface) 76%, transparent);
+}
+
+.document-open-button {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 6px 4px 6px 12px;
+  background: transparent;
+  color: var(--muted);
+  text-align: left;
+}
+
+.document-title {
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.document-meta {
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  white-space: nowrap;
+}
+
+.document-delete-button {
+  display: grid;
+  width: 32px;
+  padding: 0;
+  place-items: center;
+  background: transparent;
+  color: var(--muted);
+  opacity: 0;
+  transition: opacity 120ms ease, color 120ms ease;
+}
+
+.document-row:hover .document-delete-button,
+.document-delete-button:focus-visible {
+  opacity: 1;
+}
+
+.document-delete-button:hover {
+  color: var(--danger);
+}
+
+.folder-empty {
+  display: grid;
+  height: 100%;
+  padding: 36px;
+  place-content: center;
+  justify-items: center;
+  color: var(--muted);
+  text-align: center;
+}
+
+.folder-empty p {
+  max-width: 210px;
+  margin: 10px 0 0;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
 .statusbar {
+  position: relative;
+  z-index: 30;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -385,15 +612,67 @@ select:focus-visible {
   flex: 1;
 }
 
-.syntax-selector select {
-  max-width: 116px;
-  padding: 1px 20px 1px 5px;
+.syntax-selector {
+  position: relative;
+}
+
+.syntax-trigger {
+  display: flex;
+  min-width: 76px;
+  height: 20px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 1px 6px 1px 8px;
   background: var(--surface-raised);
   border: 1px solid var(--line);
   border-radius: 5px;
   color: var(--muted);
   font-family: 'IBM Plex Sans', sans-serif;
   font-size: 10px;
+}
+
+.syntax-trigger:hover,
+.syntax-trigger[aria-expanded='true'] {
+  border-color: var(--accent);
+  color: var(--ink);
+}
+
+.syntax-menu {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 7px);
+  z-index: 40;
+  display: grid;
+  width: 132px;
+  padding: 4px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.syntax-option {
+  display: flex;
+  height: 28px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  background: transparent;
+  border-radius: 5px;
+  color: var(--muted);
+  font-size: 11px;
+  text-align: left;
+}
+
+.syntax-option:hover,
+.syntax-option.is-active {
+  background: var(--surface-raised);
+  color: var(--ink);
+}
+
+.syntax-option.is-active {
+  color: var(--accent);
 }
 
 .loading-shell {

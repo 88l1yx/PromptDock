@@ -16,6 +16,8 @@ A Windows-first, always-on-top prompt notepad for writing system prompts, AI ins
 
 ![Multi-tab](docs/screenshots/multi-tab.png)
 
+![Folders](docs/screenshots/folders.png)
+
 ---
 
 ## 简体中文
@@ -32,6 +34,9 @@ PromptDock 解决的是“临时写一大段提示词时，不想专门打开 VS
 - 鼠标靠近显示器左缘或右缘时自动展开，任意高度都可以触发。
 - 从贴边状态主动拖离后解除吸附，不会在拖动过程中反复弹回。
 - 左侧多页面标签栏，加号固定在顶部，标签列表独立滚动。
+- 标签栏下方支持多个扁平文档文件夹，可以拖动标签保存到文件夹。
+- 拖动标签到文件夹图标时，目标文件夹会放大提示。
+- 点击文件夹可以查看保存的文档；打开文档会作为第一个标签显示，关闭标签不会删除文件夹副本。
 - CodeMirror 6 编辑器，支持行号、括号匹配、查找替换、撤销重做。
 - `[system]`、`[task]` 等中括号内容显示为绿色，`{{variable}}` 显示为琥珀色。
 - 支持 Prompt、Markdown、纯文本、JSON 和 JavaScript 语法模式。
@@ -44,8 +49,8 @@ PromptDock 解决的是“临时写一大段提示词时，不想专门打开 VS
 
 请前往 [GitHub Releases](https://github.com/88l1yx/PromptDock/releases/latest)：
 
-- [PromptDock-Portable-0.2.0-x64.exe](https://github.com/88l1yx/PromptDock/releases/latest/download/PromptDock-Portable-0.2.0-x64.exe)：无需安装，双击即可运行。
-- [PromptDock-Setup-0.2.0-x64.exe](https://github.com/88l1yx/PromptDock/releases/latest/download/PromptDock-Setup-0.2.0-x64.exe)：安装版，支持创建桌面快捷方式。
+- [PromptDock-Portable-0.3.0-x64.exe](https://github.com/88l1yx/PromptDock/releases/latest/download/PromptDock-Portable-0.3.0-x64.exe)：无需安装，双击即可运行。
+- [PromptDock-Setup-0.3.0-x64.exe](https://github.com/88l1yx/PromptDock/releases/latest/download/PromptDock-Setup-0.3.0-x64.exe)：安装版，支持创建桌面快捷方式。
 
 当前安装包未配置商业代码签名证书，Windows 首次运行时可能出现 SmartScreen 提示。
 
@@ -101,6 +106,9 @@ PromptDock is built for the moment when you need to write a long prompt or AI in
 - Move the pointer to any height on the matching left or right display edge to reveal the window.
 - Dragging away from the edge releases the dock without repeatedly snapping back.
 - Left-side multi-page tab rail with a permanently visible top add button.
+- Multiple flat document folders below the tab rail; drag a tab onto a folder to save it.
+- The target folder enlarges while a tab is dragged over it.
+- Open a folder to browse saved documents. Saved documents open as the first tab, and closing the tab does not delete the folder copy.
 - CodeMirror 6 editor with line numbers, bracket matching, search, and undo/redo.
 - `[system]`, `[task]`, and similar bracket tags are highlighted green; `{{variable}}` is amber.
 - Prompt, Markdown, plain text, JSON, and JavaScript modes.
@@ -113,8 +121,8 @@ PromptDock is built for the moment when you need to write a long prompt or AI in
 
 Open [GitHub Releases](https://github.com/88l1yx/PromptDock/releases/latest):
 
-- [PromptDock-Portable-0.2.0-x64.exe](https://github.com/88l1yx/PromptDock/releases/latest/download/PromptDock-Portable-0.2.0-x64.exe): portable, run without installation.
-- [PromptDock-Setup-0.2.0-x64.exe](https://github.com/88l1yx/PromptDock/releases/latest/download/PromptDock-Setup-0.2.0-x64.exe): installer with desktop shortcut support.
+- [PromptDock-Portable-0.3.0-x64.exe](https://github.com/88l1yx/PromptDock/releases/latest/download/PromptDock-Portable-0.3.0-x64.exe): portable, run without installation.
+- [PromptDock-Setup-0.3.0-x64.exe](https://github.com/88l1yx/PromptDock/releases/latest/download/PromptDock-Setup-0.3.0-x64.exe): installer with desktop shortcut support.
 
 The binaries are not commercially code-signed, so Windows may display a SmartScreen warning on first launch.
 

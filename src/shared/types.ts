@@ -7,11 +7,28 @@ export interface NoteTab {
   title: string
   content: string
   updatedAt: string
+  sourceDocumentId?: string
+  sourceFolderId?: string
+}
+
+export interface SavedDocument {
+  id: string
+  title: string
+  content: string
+  savedAt: string
+  sourceTabId?: string
+}
+
+export interface DocumentFolder {
+  id: string
+  name: string
+  documents: SavedDocument[]
 }
 
 export interface WorkspaceState {
   version: 1
   tabs: NoteTab[]
+  folders: DocumentFolder[]
   activeTabId: string
   theme: ThemeMode
   syntaxMode: SyntaxMode
